@@ -6,21 +6,21 @@ This project provides an implementation of the PEP/PDP/PIP/PAP access control pa
 Architecture
 ------------
 
-![rbac-man architecture](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "rbac-man architecture")
+![rbac-man architecture](https://raw.githubusercontent.com/cetic/rbac-man/master/doc/img/rbac-man-archi.png "rbac-man architecture")
 
 Sequence diagram
 ----------------
 
-![rbac-man sequence diagram](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "rbac-man sequence diagram")
+![rbac-man sequence diagram](https://raw.githubusercontent.com/cetic/rbac-man/master/doc/img/rbac-man-access_control_sequence_diagram.png "rbac-man sequence diagram")
 
 Secure Logger
 -------------
 
-![rbac-man secure logger](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "rbac-man secure logger")
+![rbac-man secure logger](https://raw.githubusercontent.com/cetic/rbac-man/master/doc/img/rbac-man-securelogger.png "rbac-man secure logger")
 
 ### Log ontology
 
-![rbac-man log ontology](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "rbac-man log ontology")
+![rbac-man log ontology](https://raw.githubusercontent.com/cetic/rbac-man/master/doc/img/rbac-man-log-ontology.png "rbac-man log ontology")
 
 Notes
 -----
