@@ -5,8 +5,8 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @JsonRootName(value="action")
 public class Action {
-
-	private String name;
+	private int id;	
+	private String name;	
 
 	@JsonProperty(value="name")
 	public String getName() {
@@ -16,6 +16,16 @@ public class Action {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	@JsonProperty(value="id")
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	
 	
 }

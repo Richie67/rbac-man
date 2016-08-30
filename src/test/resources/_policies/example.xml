@@ -1,0 +1,55 @@
+<Policy PolicyId="SamplePolicy"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides">
+
+	<!-- This Policy only applies to requests on the SampleServer -->
+	<Target>
+		<Subjects>
+			<AnySubject />
+		</Subjects>
+		<Resources>
+			<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost:8080/rbacman/test
+				</AttributeValue>
+				<ResourceAttributeDesignator
+					DataType="http://www.w3.org/2001/XMLSchema#string" AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" />
+			</ResourceMatch>
+		</Resources>
+		<Actions>
+			<AnyAction />
+		</Actions>
+	</Target>
+
+
+	<Rule RuleId="ReadRuleRbacMan" Effect="Permit">
+
+		<!-- Only use this Rule if the action is read -->
+		<Target>
+			<Subjects>
+				<Subject>
+					<SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">rbacman</AttributeValue>
+						<SubjectAttributeDesignator
+							AttributeId="urn:oasis:names:tc:xacml:1.0:subject:username"
+							DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true" />
+					</SubjectMatch>
+				</Subject>
+			</Subjects>
+			<Resources>
+				<AnyResource />
+			</Resources>			
+		</Target>
+
+	<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+          <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+                                      AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-name"/>
+        </Apply>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+      </Condition>
+	</Rule>
+	
+	<!-- A final, "fall-through" Rule that always Denies -->
+	<Rule RuleId="FinalRule" Effect="Deny" />
+
+</Policy>
+  

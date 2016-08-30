@@ -12,14 +12,14 @@ import com.sun.xacml.ctx.RequestCtx;
 
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
-import be.cetic.rbac.man.json.Subject;
+import be.cetic.rbac.man.json.User;
 
 public class Util {
 
 	private RequestCtx requestCtx;
 	
 	
-	public static RequestCtx buildRequest(Subject subject, Action action, Resource resource)
+	public static RequestCtx buildRequest(User subject, Action action, Resource resource)
 	throws Exception{
 		
 		// build the xacml request		
@@ -31,17 +31,17 @@ public class Util {
 			AttributeValue attrValue = AttributeFactory.createAttribute(typeURI, subject.getUsername());
 			Attribute subjectAttr = new Attribute(idURI, null,  null, attrValue);
 			attributes.add(subjectAttr);
-			idURI = new URI("urn:oasis:names:tc:xacml:1.0:subject:role");
+			/*idURI = new URI("urn:oasis:names:tc:xacml:1.0:subject:role");
 			attrValue = AttributeFactory.createAttribute(typeURI, subject.getRole());
 			Attribute subjectRoleAttr = new Attribute(idURI, null,  null, attrValue);
-			attributes.add(subjectRoleAttr);
+			attributes.add(subjectRoleAttr);*/
 			com.sun.xacml.ctx.Subject xacmlSubject = new com.sun.xacml.ctx.Subject(attributes);
 			subjects.add(xacmlSubject);
 			
 			Set<Attribute> xacmlResource = new HashSet<Attribute>();
 			idURI = new URI("urn:oasis:names:tc:xacml:1.0:resource:resource-id");
 			typeURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
-			attrValue = AttributeFactory.createAttribute(typeURI, resource.getId());
+			attrValue = AttributeFactory.createAttribute(typeURI, resource.getUrl());
 			Attribute resourceAttr = new Attribute(idURI, null,  null, attrValue);			
 			xacmlResource.add(resourceAttr);			
 			

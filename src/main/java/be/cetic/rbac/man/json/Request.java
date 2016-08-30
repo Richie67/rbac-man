@@ -6,16 +6,16 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName(value="request")
 public class Request {
 
-	private Subject subject;
+	private User subject;
 	private Resource resource;
 	private Action action;
 	
 	@JsonProperty(value="subject")
-	public Subject getSubject() {
+	public User getSubject() {
 		return subject;
 	}
 		
-	public void setSubject(Subject subject) {
+	public void setSubject(User subject) {
 		this.subject = subject;
 	}
 	
