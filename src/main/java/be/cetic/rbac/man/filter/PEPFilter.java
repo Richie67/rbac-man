@@ -22,6 +22,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.client.ClientConfig;
+import org.json.JSONObject;
 
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
@@ -53,8 +54,9 @@ public class PEPFilter implements Filter{
         WebTarget target;	        
 	    target = client.target(pdpEndpoint);
 	    Invocation.Builder invocationBuilder =target.request();
-    	be.cetic.rbac.man.json.Request jsonRequest = buildRequest(request);
     	try{
+    		be.cetic.rbac.man.json.Request jsonRequest = buildRequest(request);
+
     		Response r = invocationBuilder	    		
     				.post(Entity.entity(mapper.writeValueAsString(jsonRequest), MediaType.APPLICATION_JSON));
     	}
@@ -68,19 +70,52 @@ public class PEPFilter implements Filter{
 	}
 	
 	
-	private be.cetic.rbac.man.json.Request buildRequest(HttpServletRequest request){
+	private be.cetic.rbac.man.json.Request buildRequest(HttpServletRequest request) throws IOException{
 		be.cetic.rbac.man.json.Request jsonRequest = new be.cetic.rbac.man.json.Request();
 		// Build the User
 		User user = new User();
-		
-		String username = "";
-		user.setUsername(username);
 		// Build the action
 		Action action = new Action();
-		
 		// Build the resource
 		Resource resource = new Resource();
 		
+		String path = request.getPathInfo();
+		resource.setUrl(path);
+		String method = request.getMethod().toUpperCase();
+		action.setName(method);
+		// PUT /validate_user
+	    if(method.equals("PUT") && path.equals("/fednet/eastBr/user/validate_user")){	    	
+	    	RequestWrapper wrapper = new RequestWrapper(request);
+	    	String content = wrapper.getData();
+	    	JSONObject input=new JSONObject(content);
+            //LOGGER.error("INPUT: "+input.toString());
+            String username=((String)input.get("username")).split("@@")[1];
+            String tenant=((String)input.get("username")).split("@@")[0];            
+            String cmp_endpoint=input.getString("cmp_endpoint");
+            user.setUsername(username);
+            resource.setDescription(cmp_endpoint);
+            resource.setName(tenant);            
+	    }
+	    else if(method.equals("PUT") && path.equals("/fednet/eastBr/network")){
+	    	RequestWrapper wrapper = new RequestWrapper(request);
+	    	String content = wrapper.getData();
+	    	JSONObject input = new JSONObject(content);
+            String OSF_token = (String) input.get("token");
+            String OSF_network_segment_id = (String) input.get("network_segment_id");
+            String OSF_cmp_endpoint = (String) input.get("cmp_endpoint");
+            resource.setDescription(OSF_cmp_endpoint);
+            resource.setName(OSF_network_segment_id);
+            user.setUsername(OSF_token);
+	    }
+	    else if(method.equals("PUT") && path.equals("/fednet/eastBr/FA_Management")){
+	    	RequestWrapper wrapper = new RequestWrapper(request);
+	    	String content = wrapper.getData();
+	    	JSONObject input = new JSONObject(content);
+            user.setUsername((String) input.get("token"));//utilizzerò questo elemento per identificare fedten
+            resource.setDescription((String) input.get("Command"));
+            resource.setName((String)input.get("type"));
+	    }
+	
 		jsonRequest.setAction(action);
 		jsonRequest.setSubject(user);
 		jsonRequest.setResource(resource);
