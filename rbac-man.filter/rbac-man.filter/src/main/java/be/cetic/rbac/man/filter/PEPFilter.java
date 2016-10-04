@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
 import be.cetic.rbac.man.json.User;
+import be.cetic.rbac.man.wrapper.RequestWrapper;
 
 public class PEPFilter implements Filter{
 	private String pdpEndpoint;
@@ -39,10 +41,10 @@ public class PEPFilter implements Filter{
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {	
-		/*if((request instanceof HttpServletRequest)){
+		if((request instanceof HttpServletRequest)){
 				accessControl((HttpServletRequest)request, (HttpServletResponse)response);
-		}*/
-		accessControl(request, response);
+		}
+		
 	}
 	
 	private boolean accessControl(HttpServletRequest request, HttpServletResponse response){
@@ -59,7 +61,7 @@ public class PEPFilter implements Filter{
 
     		Response r = invocationBuilder	    		
     				.post(Entity.entity(mapper.writeValueAsString(jsonRequest), MediaType.APPLICATION_JSON));
-    		r.
+    		
     	}
     	catch(Exception ex){
     		logger.log(Level.WARN, ex.getMessage(), ex);
