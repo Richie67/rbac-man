@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html><head>
+  <title>RBAC MAN</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+  <!-- Bootstrap Core CSS -->
+  <link href="../styles/bootstrap.css" rel="stylesheet">
+
+  <!-- MetisMenu CSS -->
+  <link href="../styles/metisMenu.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="../styles/sb-admin-2.css" rel="stylesheet">  
+  
+  <link href="../styles/jquery.dataTables.css" rel="stylesheet"> 
+
+  <!-- Custom Fonts -->
+  <link href="../styles/font-awesome.css" rel="stylesheet" type="text/css">
+
+  <!-- Leaflet
+  <link href="../styles/leaflet-ant-path.css" rel="stylesheet" type="text/css">  
+  <link rel="stylesheet" href="../styles/codemirror.css"> -->
+  
+  <link href="../styles/styles.css" rel="stylesheet">
+<!-- jQuery -->
+<script src="../lib/jquery/jquery-1.11.3.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="../lib/bootstrap/bootstrap.js"></script>
+<!-- Metis Menu Plugin JavaScript -->
+<script src="../lib/metisMenu/metisMenu.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="../lib/sb-admin/sb-admin-2.js"></script>
+
+<script src="../lib/jquery/jquery.dataTables.js"></script>
+ <script src="../js/Network.js"></script>
+  
+</head>
+<body>
+
+<div id="app">
+  <div id="wrapper">
+       <nav class="navbar navbar-default navbar-static-top active" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a href="#%21/" class="navbar-brand v-link-active">RBAC MAN</a>
+    </div>
+    <!-- /.navbar-header -->
+
+    <ul class="nav navbar-top-links navbar-right in">
+        
+        <!-- /.dropdown -->
+        <li class="dropdown active">
+            <a class="dropdown-toggle active" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user in">
+                <li><a class="active" href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                </li>
+                <li><a class="active" href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                </li>
+                <li class="divider"></li>
+                <li><a href="http://localhost:8080/login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                </li>
+            </ul>
+            <!-- /.dropdown-user -->
+        </li>
+        <!-- /.dropdown -->
+    </ul>
+    <!-- /.navbar-top-links -->
+
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse active">
+            <div class="panel-heading navigation-heading">
+            Navigation
+            </div>
+           <ul class="nav in" id="side-menu">
+                <li>
+                    <a href="../users/index.html"><i class="fa fa-user fa-fw"></i>Users</a>
+                </li>
+                <li>
+                    <a href="../roles/index.html"><i class="fa fa-spinner fa-fw"></i>Roles</a>
+                </li>
+                <li>
+                    <a href="../actions/index.html"><i class="fa fa-cog fa-fw"></i>Actions</a>                      
+                </li>
+                <li>
+                    <a href="../resources/index.html"><i class="fa fa-tasks fa-fw"></i>Resources</a>
+                </li>
+                <li>
+                    <a href="../rules/index.html"><i class="fa fa-gavel fa-fw"></i>Rules</a>
+                </li>
+                 <li>
+                    <a class="active" href="index.html"><i class="fa fa-check  fa-fw"></i>Test</a>
+                </li>  
+                 <li>
+                    <a href="../logs/index.html"><i class="fa fa-file  fa-fw"></i>Logs</a>
+                </li>                    
+                <li>
+                    <a href="../index.html"><i class="fa fa-home fa-fw"></i>Go back Home</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
+    </div>
+    <!-- /.navbar-static-side -->
+</nav>	
+       <div style="min-height: 667px;" id="page-wrapper">
+          <div class=row>
+          <div class="request">
+          <h2>Request</h2>
+ <table>
+ <tr>
+ <td>
+ <div class="subject">
+ <h3>Subject</h3>
+ <label for="username">Username</label>
+ <select id="username" name="username">
+ 	<option> </option>
+ 	<option>user_1</option>
+ 	<option>user_2</option>
+ </select>
+ <label for="role">Role</label>
+ <select id="role" name="role">
+ 	<option> </option>
+ 	<option>tenant</option>
+ 	<option>administrator</option>
+ </select>
+ </div>
+ </td>
+ 
+ <td>
+ <div class="resource">
+ <h3>Resource</h3>
+ <label for="resource-id">Resource</label>
+ <select id="resource-id" name="resource-id">
+ 	<option>http://localhost:8080</option>
+ 	<option>http://localhost</option>
+ </select>
+ </div>
+ </td>
+ <td>
+ <div class="action">
+ <h3>Action</h3>
+ <label for="action-name">Action</label>
+ <select id="action-name" name="action-name">
+ 	<option> </option>
+ 	<option>read</option>
+ 	<option>write</option>
+ 	<option>view</option>
+ </select>
+ </div>
+ </td>
+ </tr>
+ </table>
+ <br/>
+ <input id="submit" type="button" value="Evaluate request"></input>
+ </div>
+
+ <div class="response">
+ <h2>Response</h2>
+ <table><tr><td>
+ 
+ <div id="decision"></div>
+</td>
+<td style="width:30px;">
+ <div>
+<table class="signal">
+  <tr>
+   <td><div class="red active"></div></td>
+  </tr>
+  <tr>
+   <td><div class="orange"></div></td>
+  </tr>
+  <tr>
+   <td><div class="green"></div></td>
+  </tr>
+ </table>
+ </div>
+ </td>
+ </tr>
+ </table> 
+  </div>
+  <br/>
+  </div>
+  </div>
+  </div>
+   </div>
+</body>
+<script>
+$( document ).ready(function() {
+    $("#submit").click(function(){
+    	console.log("Evaluate request");
+    	var username = $("select#username").val();
+    	var role = $("select#role").val();
+    	var resourceId = $("select#resource-id").val();
+    	var name = $("select#action-name").val();
+    	$.ajax({
+   		  url: RestEndpoint + '/pdp/evaluate',
+   		  method: "POST",
+   		  data: JSON.stringify({ subject: {username: username, role: {name: role}},
+   				  resource: {uri: resourceId},
+   				  action: {name: name}
+   		  }),
+   		  contentType: "application/json",
+   		  dataType: "json",
+   		  success: function(data){
+   			  console.log(data);
+   			  if(data.decision==0){
+   				$("div.red").removeClass("active");
+ 			 	$("div.green").addClass("active");
+   				$("div.orange").removeClass("active");
+   				$("div#decision").html("Authorized");
+   				$("div#decision").addClass("permit");
+   				$("div#decision").removeClass("indeterminated");
+   				$("div#decision").removeClass("forbidden");
+   			  }
+   			  else if(data.decision==1){
+   			 
+   				$("div.red").addClass("active");
+ 			 	$("div.green").removeClass("active");
+   				$("div.orange").removeClass("active");
+   				$("div#decision").html("Forbidden");
+   				$("div#decision").removeClass("permit");
+   				$("div#decision").removeClass("indeterminated");
+   				$("div#decision").addClass("forbidden");
+   			  }
+   			  else{
+ 				$("div.red").removeClass("active");
+ 			 	$("div.green").removeClass("active");
+   				$("div.orange").addClass("active");
+   				$("div#decision").html("Indeterminated");
+   				$("div#decision").removeClass("permit");
+   				$("div#decision").addClass("indeterminated");
+   				$("div#decision").removeClass("forbidden");
+   			  }
+   		  }
+   		});
+    		 
+    		
+    	
+    });
+});
+</script>
+</html>

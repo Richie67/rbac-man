@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html><head>
+  <title>RBAC MAN</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico">
+  <!-- Bootstrap Core CSS -->
+  <link href="../styles/bootstrap.css" rel="stylesheet">
+
+  <!-- MetisMenu CSS -->
+  <link href="../styles/metisMenu.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="../styles/sb-admin-2.css" rel="stylesheet">  
+  
+  <link href="../styles/jquery.dataTables.css" rel="stylesheet"> 
+
+  <!-- Custom Fonts -->
+  <link href="../styles/font-awesome.css" rel="stylesheet" type="text/css">
+
+  <!-- Leaflet
+  <link href="../styles/leaflet-ant-path.css" rel="stylesheet" type="text/css">  
+  <link rel="stylesheet" href="../styles/codemirror.css"> -->
+  
+  <link href="../styles/styles.css" rel="stylesheet">
+<!-- jQuery -->
+<script src="../lib/jquery/jquery-1.11.3.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="../lib/bootstrap/bootstrap.js"></script>
+<!-- Metis Menu Plugin JavaScript -->
+<script src="../lib/metisMenu/metisMenu.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="../lib/sb-admin/sb-admin-2.js"></script>
+
+<script src="../lib/jquery/jquery.dataTables.js"></script>
+ <script src="../js/Network.js"></script>
+  
+</head>
+<body>
+
+<div id="app">
+  <div id="wrapper">
+       <nav class="navbar navbar-default navbar-static-top active" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a href="#%21/" class="navbar-brand v-link-active">RBAC MAN</a>
+    </div>
+    <!-- /.navbar-header -->
+
+    <ul class="nav navbar-top-links navbar-right in">
+        
+        <!-- /.dropdown -->
+        <li class="dropdown active">
+            <a class="dropdown-toggle active" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user in">
+                <li><a class="active" href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                </li>
+                <li><a class="active" href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                </li>
+                <li class="divider"></li>
+                <li><a href="http://localhost:8080/login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                </li>
+            </ul>
+            <!-- /.dropdown-user -->
+        </li>
+        <!-- /.dropdown -->
+    </ul>
+    <!-- /.navbar-top-links -->
+
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse active">
+            <div class="panel-heading navigation-heading">
+            Navigation
+            </div>
+           <ul class="nav in" id="side-menu">
+                <li>
+                    <a href="../users/index.html"><i class="fa fa-user fa-fw"></i>Users</a>
+                </li>
+                <li>
+                    <a href="../roles/index.html"><i class="fa fa-spinner fa-fw"></i>Roles</a>
+                </li>
+                <li>
+                    <a href="../actions/index.html"><i class="fa fa-cog fa-fw"></i>Actions</a>                      
+                </li>
+                <li>
+                    <a href="../resources/index.html"><i class="fa fa-tasks fa-fw"></i>Resources</a>
+                </li>
+                <li>
+                    <a href="../rules/index.html"><i class="fa fa-gavel fa-fw"></i>Rules</a>
+                </li>
+                 <li>
+                    <a href="../test/index.html"><i class="fa fa-check  fa-fw"></i>Test</a>
+                </li>  
+                 <li>
+                    <a href="../logs/index.html"><i class="fa fa-file  fa-fw"></i>Logs</a>
+                </li>                    
+                <li>
+                    <a href="../index.html"><i class="fa fa-home fa-fw"></i>Go back Home</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
+    </div>
+    <!-- /.navbar-static-side -->
+</nav>	
+       <div style="min-height: 667px;" id="page-wrapper">
+          <div class="row">
+            <h1>Edit Role</h1>
+            <div class="alert" id="flash-message" style="display:none"></div>
+           <div class="panel-body">
+            <table id="tbl-role" class="table table-striped">
+            <tbody>
+            		<tr>
+            		<th>Id</th><td><input class="form-control" type="text" id="id" placeholder="Id" readonly/></td>
+            		</tr>            		
+            		<tr>
+            		<th>Name</th><td><input class="form-control" type="text" id="name" placeholder="Name"/></td>
+            		<tr>            		
+            		</tbody>          		
+            </table>
+            <input class="btn btn-primary" type="button" onclick="validate();" value="Edit role"/>
+            </div>
+          </div>
+      </div>
+  </div>
+  
+</div>
+
+
+<script>
+$(document).ready(function(){
+	
+	var id= getParameterByName("id");
+	getUser(id, function(data){
+		$("input#id").val(data.id);		
+		$("input#name").val(data.name);
+	})	
+});
+
+function validate(){
+	var id = $("input#id").val();	
+	var name = $("input#name").val();
+	
+	var role = new Object();	
+	role.name = name;
+	
+	editRole(id, role, function(data){
+		$("#flash-message").html(role.name + " is correctly updated");
+		$("#flash-message").show();
+		$("#flash-message").addClass("alert-success");
+		$("#flash-message").slideDown(500, function(){
+	    setTimeout(function(){
+	    	$("#flash-message").slideUp(500);  	    	
+	    	},5000);
+	    	});		
+	},
+	function(jqXHR,textStatus,errorThrown) {
+		$("#flash-message").html(errorThrown);
+		$("#flash-message").show();
+		$("#flash-message").addClass("alert-danger");
+		$("#flash-message").slideDown(500, function(){
+	    setTimeout(function(){
+	    	$("#flash-message").slideUp(500);  	    	
+	    	},5000);
+	    	});		
+		});
+	
+}
+</script>
+</body></html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os" PolicyId="TestRbacMan" RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:deny-overrides">
+  <Description />
+  <Target>
+    <Subjects>
+      <AnySubject />
+    </Subjects>
+    <Resources>
+      <Resource>
+        <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:anyURI-equal">
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#anyURI">http://localhost:8080/rbacman/test</AttributeValue>
+          <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" DataType="http://www.w3.org/2001/XMLSchema#anyURI" />
+        </ResourceMatch>
+      </Resource>
+    </Resources>
+    <Actions>
+      <AnyAction />
+    </Actions>
+  </Target>
+  <Rule Effect="Permit" RuleId="PermitAccessToto">
+    <Description>Permit Access to the TestAccess Web Service for the user rbacman</Description>
+    <Target>
+      <Subjects>
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">rbacman</AttributeValue>
+            <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:subject:username" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true" />
+          </SubjectMatch>
+        </Subject>
+      </Subjects>
+        <Actions>
+       <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+            <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+                                       AttributeId="urn:oasis:names:tc:xacml:1.0:action:name"/>
+          </ActionMatch>
+    </Actions>
+    </Target>
+  </Rule>
+</Policy>
+
