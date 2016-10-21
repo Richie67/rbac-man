@@ -3,6 +3,8 @@ package be.cetic.rbac.man.web.services;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +79,8 @@ public class PDPService {
 		try{
 			// Read the logs file
 			File tomcatDirectory = new File(System.getProperty("catalina.base"));
-			File logFile = new File(tomcatDirectory, "logs/rbacman.log");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			File logFile = new File(tomcatDirectory, "logs/rbacman"+ format.format(new Date()) + ".log");
 			BufferedReader reader = new BufferedReader(new FileReader(logFile));
 			String line;
 			StringBuffer buffer = new StringBuffer();		

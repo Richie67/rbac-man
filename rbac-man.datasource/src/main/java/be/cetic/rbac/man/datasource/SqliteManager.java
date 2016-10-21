@@ -9,9 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
@@ -33,14 +32,14 @@ public class SqliteManager implements StorageManager{
 			if(!databaseFile.exists()){
 				logger.log(Level.INFO, "Instanciate database rbacman");
 				new File(catalina_home, "_rbacman").mkdirs();
-				File source = new File(catalina_home, "webapps/RbacMan/WEB-INF/classes/rbac-man.db");				
+				File source = new File(catalina_home, "webapps/rbacman/WEB-INF/classes/rbac-man.db");				
 				Files.copy(source.toPath(), databaseFile.toPath());
 			}
 			connection = DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getAbsolutePath());
 			
 		}
 		catch(Exception ex){
-			logger.log(Level.WARN, ex.getMessage(), ex);
+			logger.log(Level.WARNING, ex.getMessage(), ex);
 		}
 	}
 	
