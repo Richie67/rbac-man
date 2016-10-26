@@ -121,11 +121,6 @@
  <select id="username" name="username">
  	<option> </option> 	
  </select>
- <label for="role">Role</label>
- <select id="role" name="role">
- 	<option> </option>
- 	
- </select>
  </div>
  </td>
  
@@ -194,7 +189,7 @@ $( document ).ready(function() {
 				});
 		});
 	
-		getRoles(function(data){
+	/*	getRoles(function(data){
 			$.each( data.data, function( key, value ) {
 				  var id = value.name;
 				  var name = value.name;
@@ -203,7 +198,7 @@ $( document ).ready(function() {
 				        text : name 
 				    }));
 				});
-		});
+		});*/
 		getResources(function(data){
 			$.each( data.data, function( key, value ) {
 				  var id = value.uri;
@@ -236,7 +231,7 @@ $( document ).ready(function() {
     	$.ajax({
    		  url: RestEndpoint + '/pdp/evaluate',
    		  method: "POST",
-   		  data: JSON.stringify({ subject: {username: username, role: {name: role}},
+   		  data: JSON.stringify({ subject: {username: username},
    				  resource: {uri: resourceId},
    				  action: {name: name}
    		  }),
