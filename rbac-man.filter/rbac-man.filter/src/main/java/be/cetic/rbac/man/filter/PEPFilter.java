@@ -20,10 +20,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONObject;
 
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
 import be.cetic.rbac.man.json.User;
+import be.cetic.rbac.man.wrapper.RequestWrapper;
 
 public class PEPFilter implements Filter{
 	private String pdpEndpoint;
@@ -101,9 +103,17 @@ public class PEPFilter implements Filter{
 		// Build the User
 		User user = new User();
 		// Retrieve the username
-		String username = request.getHeader("Username");
-		user.setUsername(username);
-
+		try{
+			RequestWrapper wrapper = new RequestWrapper(request);
+			String content = wrapper.getData();
+	    	JSONObject input = new JSONObject(content);
+			Object username = input.get("user");
+			if(username != null)
+				user.setUsername(username.toString());	
+		}
+		catch(IOException ex){
+			logger.log(Level.WARNING,  ex.getMessage(),  ex);
+		}
 		// Build the action
 		Action action = new Action();
 		// Build the resource
