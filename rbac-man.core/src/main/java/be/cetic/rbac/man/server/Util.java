@@ -61,6 +61,9 @@ public class Util {
 	
 	public static File getPoliciesDirectory(){
 		File tomcatRoot = new File(System.getProperty("catalina.home"));
-		return new File(tomcatRoot, "webapps/RbacMan/WEB-INF/_policies");
+		File policiesDirectory = new File(tomcatRoot, "_rbacman/policies");
+		if(!policiesDirectory.exists())
+			policiesDirectory.mkdirs();
+		return policiesDirectory;
 	}
 }
