@@ -65,9 +65,8 @@ public class PDPService {
 			if(!responseCtx.getResults().isEmpty()){
 				Result result = (Result)responseCtx.getResults().iterator().next();
 				response.setDecision(result.getDecision());
-				response.setMessage(result.getStatus().getMessage());
-				//TODO change it when activated
-				// response.setPermit(result.getDecision()==Result.DECISION_PERMIT);				
+				response.setMessage(result.getStatus().getMessage());				
+				response.setPermit(result.getDecision()==Result.DECISION_PERMIT);				
 				logger.log(Level.INFO, "Response of PDP {0} - {1} - {2} ", new Object[]{response.getDecision(), response.getMessage(), response.isPermit()});
 			}
 						

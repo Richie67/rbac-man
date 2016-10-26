@@ -30,10 +30,12 @@ public class Util {
 			AttributeValue attrValue = AttributeFactory.createAttribute(typeURI, subject.getUsername());
 			Attribute subjectAttr = new Attribute(idURI, null,  null, attrValue);
 			attributes.add(subjectAttr);
-			idURI = new URI("urn:oasis:names:tc:xacml:1.0:subject:role");
-			attrValue = AttributeFactory.createAttribute(typeURI, subject.getRole().getName());
-			Attribute subjectRoleAttr = new Attribute(idURI, null,  null, attrValue);
-			attributes.add(subjectRoleAttr);
+			if(subject.getRole() != null){
+				idURI = new URI("urn:oasis:names:tc:xacml:1.0:subject:role");
+				attrValue = AttributeFactory.createAttribute(typeURI, subject.getRole().getName());
+				Attribute subjectRoleAttr = new Attribute(idURI, null,  null, attrValue);
+				attributes.add(subjectRoleAttr);
+			}
 			com.sun.xacml.ctx.Subject xacmlSubject = new com.sun.xacml.ctx.Subject(attributes);
 			subjects.add(xacmlSubject);
 			

@@ -90,8 +90,9 @@ public class Policy extends XacmlRequestEntity{
 				rules.add(rule);
 			}
 			target = getInitialTarget(resources);
+
 			com.sun.xacml.Policy policy = new com.sun.xacml.Policy(idPolicy, combiningAlg,target, rules);
-					
+			
 			FileOutputStream out = new FileOutputStream(policyFile);
 			logger.info("Write policy for role " + subject.getRoleName() + " into " + policyFile.getAbsolutePath());
 			policy.encode(out, new Indenter(5));
