@@ -66,7 +66,7 @@ public class PDPService {
 				Result result = (Result)responseCtx.getResults().iterator().next();
 				response.setDecision(result.getDecision());
 				response.setMessage(result.getStatus().getMessage());				
-				response.setPermit(result.getDecision()==Result.DECISION_PERMIT);				
+				response.setPermit(result.getDecision()!=Result.DECISION_DENY);				
 				logger.log(Level.INFO, "Response of PDP {0} - {1} - {2} ", new Object[]{response.getDecision(), response.getMessage(), response.isPermit()});
 			}
 						

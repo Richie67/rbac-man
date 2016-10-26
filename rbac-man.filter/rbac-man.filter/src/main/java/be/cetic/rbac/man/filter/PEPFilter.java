@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -42,8 +43,9 @@ public class PEPFilter implements Filter{
 		if((req instanceof HttpServletRequest)){
 				HttpServletRequest request = (HttpServletRequest) req;
 				HttpServletResponse response = (HttpServletResponse) res;
-				if(accessControl(request, response))
-					chain.doFilter(request, response);
+				RequestWrapper wrapper = new RequestWrapper(request);
+				if(accessControl(wrapper, response))
+					chain.doFilter(wrapper, response);
 			     else {    	 			    	 
 			    	 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			    	 response.sendError(HttpServletResponse.SC_FORBIDDEN);			    	 
@@ -53,11 +55,11 @@ public class PEPFilter implements Filter{
 		
 	}
 	
-	private boolean accessControl(HttpServletRequest request, HttpServletResponse response){
+	private boolean accessControl(RequestWrapper request, HttpServletResponse response){
 		logger.log(Level.INFO, request.getRemoteAddr());
 		boolean isPermit = false; 
     	try{
-    		ObjectMapper mapper = new ObjectMapper();
+    		ObjectMapper mapper = new ObjectMapper();    		
     		be.cetic.rbac.man.json.Request jsonRequest = buildRequest(request);
     		DefaultHttpClient httpClient = new DefaultHttpClient();
     		HttpPost postRequest = new HttpPost(pdpEndpoint);
@@ -98,14 +100,13 @@ public class PEPFilter implements Filter{
 	
 
 	
-	private be.cetic.rbac.man.json.Request buildRequest(HttpServletRequest request) throws IOException{
+	private be.cetic.rbac.man.json.Request buildRequest(RequestWrapper request) throws IOException{
 		be.cetic.rbac.man.json.Request jsonRequest = new be.cetic.rbac.man.json.Request();
 		// Build the User
 		User user = new User();
 		// Retrieve the username
-		try{
-			RequestWrapper wrapper = new RequestWrapper(request);
-			String content = wrapper.getData();
+		try{			
+			String content = IOUtils.toString(request.getInputStream());
 	    	JSONObject input = new JSONObject(content);
 			Object username = input.get("user");
 			if(username != null)
