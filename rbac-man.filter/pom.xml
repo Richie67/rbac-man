@@ -4,6 +4,7 @@
   <artifactId>rbac-man.filter</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
+  
   <modules>
   	<module>../rbac-man.core</module>
   	<module>rbac-man.filter</module>

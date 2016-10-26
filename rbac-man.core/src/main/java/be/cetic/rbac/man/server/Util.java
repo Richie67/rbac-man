@@ -20,8 +20,7 @@ public class Util {
 	
 	
 	public static RequestCtx buildRequest(User subject, Action action, Resource resource)
-	throws Exception{
-		
+	throws Exception{		
 		// build the xacml request		
 
 			Set<com.sun.xacml.ctx.Subject> subjects = new HashSet<com.sun.xacml.ctx.Subject>();

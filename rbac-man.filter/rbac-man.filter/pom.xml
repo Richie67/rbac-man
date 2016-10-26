@@ -3,29 +3,56 @@
   <groupId>be.cetic</groupId>
   <artifactId>filter</artifactId>
   <version>1.0.0</version>
+  <packaging>jar</packaging>
   <dependencies>
-  
-<dependency>
-	<groupId>be.cetic</groupId>
-	<artifactId>rbac-man.core</artifactId>
-	<version>1.0.0</version>
-</dependency>
 <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
-		<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20160810</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client -->
+	<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
 <dependency>
-    <groupId>org.glassfish.jersey.core</groupId>
-    <artifactId>jersey-client</artifactId>
-    <version>2.12</version>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpclient</artifactId>
+	<version>4.1.1</version>
 </dependency>
 </dependencies>
+<build>
+    <plugins>
+        <!-- Maven Assembly Plugin -->
+			<plugin>
+			
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+				<excludes>
+				<exclude>**/pom.xml</exclude>
+				</excludes>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>				
+
+				</configuration>
+				<executions>
+				  <execution>
+					<id>make-assembly</id>
+                                        <!-- bind to the packaging phase -->
+					<phase>package</phase> 
+					<goals>
+						<goal>single</goal>
+					</goals>
+				  </execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
 </project>

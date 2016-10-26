@@ -1,6 +1,10 @@
 package be.cetic.rbac.man.filter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -10,24 +14,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.glassfish.jersey.client.ClientConfig;
-import org.json.JSONObject;
 
 import be.cetic.rbac.man.json.Action;
 import be.cetic.rbac.man.json.Resource;
 import be.cetic.rbac.man.json.User;
-import be.cetic.rbac.man.wrapper.RequestWrapper;
 
 public class PEPFilter implements Filter{
 	private String pdpEndpoint;
@@ -39,103 +35,85 @@ public class PEPFilter implements Filter{
 		pdpEndpoint = filterConfig.getInitParameter(PDP_ENDPOINT);
 	}
 
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {	
-		if((request instanceof HttpServletRequest)){
-				accessControl((HttpServletRequest)request, (HttpServletResponse)response);
+		if((req instanceof HttpServletRequest)){
+				HttpServletRequest request = (HttpServletRequest) req;
+				HttpServletResponse response = (HttpServletResponse) res;
+				if(accessControl(request, response))
+					chain.doFilter(request, response);
+			     else {    	 			    	 
+			    	 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			    	 response.sendError(HttpServletResponse.SC_FORBIDDEN);			    	 
+			     }
+
 		}
 		
 	}
 	
 	private boolean accessControl(HttpServletRequest request, HttpServletResponse response){
 		logger.log(Level.INFO, request.getRemoteAddr());
-		boolean isPermit = true; //TODO change this default value
-		ClientConfig config = new ClientConfig();
-	    Client client = ClientBuilder.newClient(config);
-	    ObjectMapper mapper = new ObjectMapper();
-        WebTarget target;	        
-	    target = client.target(pdpEndpoint);
-	    Invocation.Builder invocationBuilder =target.request();
+		boolean isPermit = false; 
     	try{
+    		ObjectMapper mapper = new ObjectMapper();
     		be.cetic.rbac.man.json.Request jsonRequest = buildRequest(request);
-
-    		Response r = invocationBuilder	    		
-    				.post(Entity.entity(mapper.writeValueAsString(jsonRequest), MediaType.APPLICATION_JSON));
+    		DefaultHttpClient httpClient = new DefaultHttpClient();
+    		HttpPost postRequest = new HttpPost(pdpEndpoint);
+    		logger.log(Level.INFO, mapper.writeValueAsString(jsonRequest));
+    		StringEntity input = new StringEntity(mapper.writeValueAsString(jsonRequest));
+    		input.setContentType("application/json");
+    		postRequest.setEntity(input);
     		
+    		logger.log(Level.INFO, "Send request to  "+ pdpEndpoint);
+    		HttpResponse res = httpClient.execute(postRequest);
+
+    		if (res.getStatusLine().getStatusCode() != 200) {
+    			throw new RuntimeException("Failed : HTTP error code : "
+    				+ res.getStatusLine().getStatusCode());
+    		}
+
+    		BufferedReader br = new BufferedReader(
+                    new InputStreamReader((res.getEntity().getContent())));
+
+			String line;
+			StringBuffer resp = new StringBuffer();
+			logger.log(Level.INFO, "Output from Server .... \n");
+			while ((line = br.readLine()) != null) {
+				resp.append(line);
+			}
+    		
+    		httpClient.getConnectionManager().shutdown();
+    		
+
+    		be.cetic.rbac.man.json.Response r = mapper.readValue(resp.toString(),  be.cetic.rbac.man.json.Response.class);
+    		isPermit = r.isPermit();    		    	
     	}
     	catch(Exception ex){
-    		logger.log(Level.WARN, ex.getMessage(), ex);
+    		logger.log(Level.WARNING, ex.getMessage(), ex);
     	}
     	return isPermit;
 	}
 	
-	/*private boolean accessControl(ServletRequest request, ServletResponse response){
-		logger.log(Level.INFO, request.getRemoteAddr());
-		boolean isPermit = true;
-		ClientConfig config = new ClientConfig();
-		Client client = ClientBuilder.newClient(config);
-		ObjectMapper mapper = new ObjectMapper();
-		WebTarget target = client.target(pdpEndpoint);
-		Invocation.Builder invocationbuilder = target.request();
-		try{
-			RequestWrapper wrapper = new RequestWrapper(request);
-			Response r = invocationbuilder.post(Entity.entity(mapper.writeValueAsString(wrapper.getRequest()), MediaType.APPLICATION_JSON));
-			logger.log(Level.INFO, r);
-		}
-		catch(Exception ex){
-			logger.log(Level.WARN,  ex.getMessage(), ex);
-		}
-		return isPermit;
-	}*/
-	
-	
+
 	
 	private be.cetic.rbac.man.json.Request buildRequest(HttpServletRequest request) throws IOException{
 		be.cetic.rbac.man.json.Request jsonRequest = new be.cetic.rbac.man.json.Request();
 		// Build the User
 		User user = new User();
+		// Retrieve the username
+		String username = request.getHeader("Username");
+		user.setUsername(username);
+
 		// Build the action
 		Action action = new Action();
 		// Build the resource
 		Resource resource = new Resource();
 		
-		String path = request.getPathInfo();
+		String path = request.getRequestURL().toString();
 		resource.setUrl(path);
 		String method = request.getMethod().toUpperCase();
 		action.setName(method);
-		// PUT /validate_user
-	    if(method.equals("PUT") && path.equals("/fednet/eastBr/user/validate_user")){	    	
-	    	RequestWrapper wrapper = new RequestWrapper(request);
-	    	String content = wrapper.getData();
-	    	JSONObject input=new JSONObject(content);
-            //LOGGER.error("INPUT: "+input.toString());
-            String username=((String)input.get("username")).split("@@")[1];
-            String tenant=((String)input.get("username")).split("@@")[0];            
-            String cmp_endpoint=input.getString("cmp_endpoint");
-            user.setUsername(username);
-            resource.setDescription(cmp_endpoint);
-            resource.setName(tenant);            
-	    }
-	    else if(method.equals("PUT") && path.equals("/fednet/eastBr/network")){
-	    	RequestWrapper wrapper = new RequestWrapper(request);
-	    	String content = wrapper.getData();
-	    	JSONObject input = new JSONObject(content);
-            String OSF_token = (String) input.get("token");
-            String OSF_network_segment_id = (String) input.get("network_segment_id");
-            String OSF_cmp_endpoint = (String) input.get("cmp_endpoint");
-            resource.setDescription(OSF_cmp_endpoint);
-            resource.setName(OSF_network_segment_id);
-            user.setUsername(OSF_token);
-	    }
-	    else if(method.equals("PUT") && path.equals("/fednet/eastBr/FA_Management")){
-	    	RequestWrapper wrapper = new RequestWrapper(request);
-	    	String content = wrapper.getData();
-	    	JSONObject input = new JSONObject(content);
-            user.setUsername((String) input.get("token"));//utilizzerò questo elemento per identificare fedten
-            resource.setDescription((String) input.get("Command"));
-            resource.setName((String)input.get("type"));
-	    }
-	
+
 		jsonRequest.setAction(action);
 		jsonRequest.setSubject(user);
 		jsonRequest.setResource(resource);
@@ -147,6 +125,57 @@ public class PEPFilter implements Filter{
 	public void destroy() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public static void main(String[] args){
+		try{
+    		ObjectMapper mapper = new ObjectMapper();
+    		be.cetic.rbac.man.json.Request jsonRequest = new be.cetic.rbac.man.json.Request();
+    		User subject = new User();
+    		subject.setUsername("user_1");
+    		Resource r = new Resource();
+    		r.setUrl("http://localhost:8080");
+    		jsonRequest.setResource(r);
+    		Action action = new Action();
+    		action.setName("read");
+    		jsonRequest.setAction(action);
+    		jsonRequest.setSubject(subject);
+    		String pdpEndpoint = "http://localhost:8080/rbacman/ws/pdp/evaluate";
+    		DefaultHttpClient httpClient = new DefaultHttpClient();
+    		HttpPost postRequest = new HttpPost(pdpEndpoint);
+    		StringEntity input = new StringEntity(mapper.writeValueAsString(jsonRequest));
+    		input.setContentType("application/json");
+    		postRequest.setEntity(input);
+    		
+    		
+    		logger.log(Level.INFO, "Send request to  "+ pdpEndpoint);
+    		HttpResponse res = httpClient.execute(postRequest);
+
+    		if (res.getStatusLine().getStatusCode() != 200) {
+    			
+    			throw new RuntimeException("Failed : HTTP error code : "
+    				+ res.getStatusLine().getStatusCode());
+    		}
+
+    		BufferedReader br = new BufferedReader(
+                    new InputStreamReader((res.getEntity().getContent())));
+
+			String line;
+			StringBuffer resp = new StringBuffer();
+			logger.log(Level.INFO, "Output from Server .... \n");
+			while ((line = br.readLine()) != null) {
+				resp.append(line);
+			}
+    		
+    		httpClient.getConnectionManager().shutdown();
+    		
+
+    		be.cetic.rbac.man.json.Response r2 = mapper.readValue(resp.toString(),  be.cetic.rbac.man.json.Response.class);
+    		System.out.println(mapper.writeValueAsString(r2));   		    	
+    	}
+    	catch(Exception ex){
+    		logger.log(Level.WARNING, ex.getMessage(), ex);
+    	}
 	}
 
 }

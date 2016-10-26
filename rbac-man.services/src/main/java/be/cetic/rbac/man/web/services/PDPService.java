@@ -24,8 +24,11 @@ import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Result;
 
 import be.cetic.rbac.man.json.Request;
+import be.cetic.rbac.man.json.User;
+import be.cetic.rbac.man.pip.SqlitePIP;
 import be.cetic.rbac.man.server.PAP;
 import be.cetic.rbac.man.server.PDP;
+import be.cetic.rbac.man.server.PIP;
 import be.cetic.rbac.man.server.Util;
 
 @Path("/pdp")
@@ -52,14 +55,19 @@ public class PDPService {
 			 
 			PAP pap = new PAP(policiesDirectory);
 			PDP pdp = new PDP(pap);
-			
+			PIP pip = new SqlitePIP();
+			User user = pip.getUser(request.getSubject().getUsername());
+			if(user!= null)
+				request.getSubject().setRole(user.getRole());
 			ResponseCtx responseCtx = pdp.evaluateRequest(Util.buildRequest(request.getSubject(), request.getAction(), request.getResource()));
 			be.cetic.rbac.man.json.Response response = new be.cetic.rbac.man.json.Response();
+			response.setPermit(true);
 			if(!responseCtx.getResults().isEmpty()){
 				Result result = (Result)responseCtx.getResults().iterator().next();
 				response.setDecision(result.getDecision());
 				response.setMessage(result.getStatus().getMessage());
-				response.setPermit(result.getDecision()==Result.DECISION_PERMIT);
+				//TODO change it when activated
+				// response.setPermit(result.getDecision()==Result.DECISION_PERMIT);				
 				logger.log(Level.INFO, "Response of PDP {0} - {1} - {2} ", new Object[]{response.getDecision(), response.getMessage(), response.isPermit()});
 			}
 						

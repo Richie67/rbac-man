@@ -28,7 +28,9 @@ public class SqliteManager implements StorageManager{
 			Class.forName("org.sqlite.JDBC");
 			logger.log(Level.INFO, "Driver loaded");
 			String catalina_home = System.getProperty("catalina.base");
+			logger.log(Level.INFO, "Catalina home " + catalina_home);
 			File databaseFile = new File(catalina_home, "_rbacman/rbac-man.db");
+			logger.log(Level.INFO, "Search database " + databaseFile.getAbsolutePath());			
 			if(!databaseFile.exists()){
 				logger.log(Level.INFO, "Instanciate database rbacman");
 				new File(catalina_home, "_rbacman").mkdirs();
