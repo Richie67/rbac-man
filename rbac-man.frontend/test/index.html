@@ -119,15 +119,12 @@
  <h3>Subject</h3>
  <label for="username">Username</label>
  <select id="username" name="username">
- 	<option> </option>
- 	<option>user_1</option>
- 	<option>user_2</option>
+ 	<option> </option> 	
  </select>
  <label for="role">Role</label>
  <select id="role" name="role">
  	<option> </option>
- 	<option>tenant</option>
- 	<option>administrator</option>
+ 	
  </select>
  </div>
  </td>
@@ -137,8 +134,6 @@
  <h3>Resource</h3>
  <label for="resource-id">Resource</label>
  <select id="resource-id" name="resource-id">
- 	<option>http://localhost:8080</option>
- 	<option>http://localhost</option>
  </select>
  </div>
  </td>
@@ -147,10 +142,6 @@
  <h3>Action</h3>
  <label for="action-name">Action</label>
  <select id="action-name" name="action-name">
- 	<option> </option>
- 	<option>read</option>
- 	<option>write</option>
- 	<option>view</option>
  </select>
  </div>
  </td>
@@ -192,6 +183,50 @@
 </body>
 <script>
 $( document ).ready(function() {
+		getUsers(function(data){
+			$.each( data.data, function( key, value ) {
+				  var id = value.username;
+				  var name = value.username;
+				  $("select#username").append($('<option>', { 
+				        value: id,
+				        text : name 
+				    }));
+				});
+		});
+	
+		getRoles(function(data){
+			$.each( data.data, function( key, value ) {
+				  var id = value.name;
+				  var name = value.name;
+				  $("select#role").append($('<option>', { 
+				        value: id,
+				        text : name 
+				    }));
+				});
+		});
+		getResources(function(data){
+			$.each( data.data, function( key, value ) {
+				  var id = value.uri;
+				  var name = value.name;
+				  $("select#resource-id").append($('<option>', { 
+				        value: id,
+				        text : name 
+				    }));
+				});
+		});
+		getActions(function(data){
+			$.each( data.data, function( key, value ) {
+				  var id = value.name;
+				  var name = value.name;
+				  $("select#action-name").append($('<option>', { 
+				        value: id,
+				        text : name 
+				    }));
+				});
+		});
+		
+		
+	
     $("#submit").click(function(){
     	console.log("Evaluate request");
     	var username = $("select#username").val();
