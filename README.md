@@ -14,6 +14,9 @@ Interface
 
 rbac-man offers a management interface with CRUD operations on its entities (user, rule, actions, ...), rule testing and logs.
 
+![Demo video](rbacman.gif)
+
+
 ![rbac-man test interface](https://raw.githubusercontent.com/cetic/rbac-man/master/doc/img/rbac-man-screenshot-test-interface.png "rbac-man test interface")
 
 Sequence diagram
